@@ -325,10 +325,6 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
 
                 // eslint-disable-next-line no-use-before-define
                 return close().then(() => {
-                    const restart = memoize(() : ZalgoPromise<void> =>
-                        initCheckout({ props, components, serviceData, config, payment: { button, fundingSource, card, buyerIntent, isClick: false } })
-                            .start().finally(unresolvedPromise));
-
                     return onApprove({ payerID, paymentID, billingToken, subscriptionID, buyerAccessToken, authCode }, { restart }).catch(noop);
                 });
             },
@@ -394,6 +390,11 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                 throw err;
             }
         });
+    });
+
+    const restart = memoize(() : ZalgoPromise<void> => {
+        return initCheckout({ props, components, serviceData, config, payment: { button, fundingSource, card, buyerIntent, isClick: false } })
+            .start().finally(unresolvedPromise);
     });
 
     const click = () => {
